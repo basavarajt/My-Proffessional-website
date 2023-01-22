@@ -1,0 +1,49 @@
+pip install nltk
+pip install flask
+
+import nltk
+from nltk.chat.util import Chat, reflections
+from flask import Flask, request
+
+pairs = [
+    [
+        r"my name is (.*)",
+        ["Hello %1, How are you today?"]
+    ],
+    [
+        r"hi|hey|hello",
+        ["Hello", "Hey there"]
+    ],
+    [
+        r"what is your name?",
+        ["My name is AI", "I am an AI chatbot"]
+    ],
+    [
+        r"how are you?",
+        ["I'm doing good", "I'm fine", "I'm great!"]
+    ],
+    [
+        r"sorry (.*)",
+        ["Its alright", "Its OK, never mind"]
+    ],
+    [
+        r"I am (.*) doing good",
+        ["Nice to hear that", "Alright :)"]
+    ],
+    [
+        r"quit",
+        ["Bye bye take care. It was nice talking to you :) "]
+    ],
+]
+
+app = Flask(__name__)
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    user_input = request.form["text"]
+    response = Chat(pairs, reflections).respond(user_input)
+    return response
+
+if __name__ == "__main__":
+    app.run()
+
