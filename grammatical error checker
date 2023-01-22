@@ -1,0 +1,26 @@
+import nltk
+
+# Function to check for grammatical errors
+def check_grammar(text):
+    # Tokenize the text
+    tokens = nltk.word_tokenize(text)
+    # POS tagging
+    tagged = nltk.pos_tag(tokens)
+    # Grammar checking
+    grammar = nltk.CFG.fromstring("""
+    S -> NP VP
+    NP -> Det N | Det N PP
+    VP -> V NP | VP PP
+    PP -> P NP
+    Det -> 'a' | 'an' | 'the'
+    N -> 'book' | 'flight'
+    V -> 'book' | 'include'
+    P -> 'on' | 'in'
+    """)
+    parser = nltk.ChartParser(grammar)
+    for tree in parser.parse(tagged):
+        print(tree)
+
+# Example usage
+text = "I book a flight on Monday"
+check_grammar(text)
