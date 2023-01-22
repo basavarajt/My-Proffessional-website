@@ -1,0 +1,17 @@
+from flask import Flask, request
+from sumy.parsers.html import HtmlParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer as Summarizer
+
+app = Flask(__name__)
+
+@app.route("/summarize", methods=["POST"])
+def summarize():
+    url = request.form["url"]
+    parser = HtmlParser.from_url(url, Tokenizer("english"))
+    summarizer = Summarizer()
+    summary = summarizer(parser.document, 1) # 1 for one sentence summary
+    return summary[0]._text
+
+if __name__ == "__main__":
+    app.run()
