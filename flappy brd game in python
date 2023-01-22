@@ -1,0 +1,71 @@
+import pygame
+import random
+
+# initialize pygame and create window
+pygame.init()
+width, height = 288, 512
+screen = pygame.display.set_mode((width, height))
+
+# load images
+bird_img = pygame.image.load("bird.png")
+bg_img = pygame.image.load("bg.png")
+pipe_img = pygame.image.load("pipe.png")
+
+# create bird and pipe objects
+bird = pygame.Rect(65, 50, 50, 50)
+pipe1 = pygame.Rect(300, 0, 70, random.randint(200, 400))
+pipe2 = pygame.Rect(450, 0, 70, random.randint(200, 400))
+pipes = [pipe1, pipe2]
+
+# game variables
+gravity = 0.25
+bird_vel = 0
+score = 0
+
+# main game loop
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # update bird velocity and position
+    bird_vel += gravity
+    bird.top += bird_vel
+
+    # check for collision with pipes
+    for pipe in pipes:
+        if bird.colliderect(pipe):
+            running = False
+
+    # update pipe positions
+    for pipe in pipes:
+        pipe.left -= 2
+
+    # check for new pipes
+    if pipes[-1].left < width - 100:
+        new_pipe = pygame.Rect(width, 0, 70, random.randint(200, 400))
+        pipes.append(new_pipe)
+
+    # check for pipes off screen
+    if pipes[0].right < 0:
+        pipes.pop(0)
+
+    # update score
+    if pipes[0].right < bird.left and pipes[0].top > bird.top:
+        score += 1
+
+    # draw background
+    screen.blit(bg_img, (0, 0))
+
+    # draw pipes
+    for pipe in pipes:
+        screen.blit(pipe_img, pipe)
+
+    # draw bird
+    screen.blit(bird_img, bird)
+
+    # update display
+    pygame.display.update()
+
+pygame.quit()
